@@ -32,11 +32,15 @@ jobs:
         env:
           GRADLE_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=512m"
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Corpygram-APK
-          path: |
-            TMessagesProj/build/outputs/apk/**/*.apk
-            TMessagesProj_AppHuawei/build/outputs/apk/**/*.apk
-          retention-days: 30
+      - name: Deploy APK to server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+          APK=$(find . -name "*.apk" | head -1)
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "$APK" root@$SERVER_IP:/var/www/html/corpygram.apk
+          echo "APK deployed to server!"
