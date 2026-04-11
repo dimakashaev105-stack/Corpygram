@@ -35,6 +35,8 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Corygram-APK
-          path: TMessagesProj/build/outputs/apk/**/*.apk
+          name: Corpygram-APK
+          path: |
+            TMessagesProj/build/outputs/apk/**/*.apk
+            TMessagesProj_AppHuawei/build/outputs/apk/**/*.apk
           retention-days: 30
